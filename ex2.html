@@ -1,0 +1,254 @@
+<html> 
+  <head> 
+    <title></title> 
+    <link type="text/css" href="base.css" rel="stylesheet" /> 
+	<!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.min.js"></script><![endif]--> 
+    <script language="javascript" type="text/javascript" src="jit-dev.js"></script> 
+  </head> 
+  <body> 
+ 
+     <div id="infovis" style="width:800; height:800;border-style:solid;border-width:5px"></div> 
+    
+    <script> 
+    // test data
+    var json =
+     
+	[
+  {
+    "id": "6a42bad2-990d-1db9-3fba-86027045c341",
+    "name": "KK-SNAPTEST-2",
+    "data": {
+      "name": "KK-SNAPTEST-2"
+    },
+    "adjacencies": null
+  },
+  {
+    "id": "3e315f3e-e814-a226-0b76-d41ba8d4e0ed",
+    "name": "n1",
+    "data": {
+      "name": "n1"
+    },
+    "adjacencies": [
+      "6a42bad2-990d-1db9-3fba-86027045c341"
+    ]
+  },
+  {
+    "id": "e4ad7161-710d-e993-a060-9fd80fb0bfda",
+    "name": "n2",
+    "data": {
+      "name": "n2"
+    },
+    "adjacencies": [
+      "3e315f3e-e814-a226-0b76-d41ba8d4e0ed"
+    ]
+  },
+  {
+    "id": "501e7af3-6083-5bb2-6f4c-fa935114f2f8",
+    "name": "n4",
+    "data": {
+      "name": "n4"
+    },
+    "adjacencies": [
+      "e4ad7161-710d-e993-a060-9fd80fb0bfda"
+    ]
+  },
+  {
+    "id": "ac8c6ffe-5c7e-a01e-92dc-729a9f275814",
+    "name": "n3",
+    "data": {
+      "name": "n3"
+    },
+    "adjacencies": [
+      "e4ad7161-710d-e993-a060-9fd80fb0bfda"
+    ]
+  },
+  {
+    "id": "439c4d6a-efff-6476-4dea-53461cbdaaee",
+    "name": "n3xx",
+    "data": {
+      "name": "n3xx"
+    },
+    "adjacencies": [
+      "ac8c6ffe-5c7e-a01e-92dc-729a9f275814"
+    ]
+  },
+  {
+    "id": "NOW",
+    "name": "** NOW **",
+    "data": {
+      "name": "KK-SNAPTEST-2"
+    },
+    "adjacencies": [
+      "3e315f3e-e814-a226-0b76-d41ba8d4e0ed"
+    ]
+  },
+  {
+    "id": "25f47055-4390-a8f4-79fe-fb7a9812424b",
+    "name": "kss8",
+    "data": {
+      "name": "kss8"
+    },
+    "adjacencies": [
+      "6a42bad2-990d-1db9-3fba-86027045c341"
+    ]
+  },
+  {
+    "id": "601f91ff-85f6-96e9-6b17-ecd4c1c859b8",
+    "name": "kss4",
+    "data": {
+      "name": "kss4"
+    },
+    "adjacencies": [
+      "6a42bad2-990d-1db9-3fba-86027045c341"
+    ]
+  },
+  {
+    "id": "d22ab20f-63ac-c8c3-b952-65e9ca517f50",
+    "name": "kss5",
+    "data": {
+      "name": "kss5"
+    },
+    "adjacencies": [
+      "601f91ff-85f6-96e9-6b17-ecd4c1c859b8"
+    ]
+  },
+  {
+    "id": "c75e42fb-3948-6353-7026-0fd700c3a2ad",
+    "name": "kss3",
+    "data": {
+      "name": "kss3"
+    },
+    "adjacencies": [
+      "6a42bad2-990d-1db9-3fba-86027045c341"
+    ]
+  },
+  {
+    "id": "8a937c12-63ad-06fe-2971-b8c442c7ceb5",
+    "name": "kss7",
+    "data": {
+      "name": "kss7"
+    },
+    "adjacencies": [
+      "6a42bad2-990d-1db9-3fba-86027045c341"
+    ]
+  }
+]
+	 ; 
+    
+    // Round corners
+    $jit.ST.Plot.NodeTypes.implement({ 
+      'roundrect': { 
+        'render': function(node, canvas, animating) { 
+          var pos = node.pos.getc(true), nconfig = this.node, data = node.data; 
+          var width  = nconfig.width, height = nconfig.height; 
+          var algnPos = this.getAlignedPos(pos, width, height); 
+          var ctx = canvas.getCtx(), ort = this.config.orientation; 
+          ctx.beginPath(); 
+          var r = 10; //corner radius 
+          var x = algnPos.x; 
+          var y = algnPos.y; 
+          var h = height; 
+          var w = width; 
+          ctx.moveTo(x + r, y); 
+          ctx.lineTo(x + w - r, y); 
+          ctx.quadraticCurveTo(x + w, y, x + w, y + r); 
+          ctx.lineTo(x + w, y + h - r); 
+          ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h); 
+          ctx.lineTo(x + r, y + h); 
+          ctx.quadraticCurveTo(x, y + h, x, y + h - r); 
+          ctx.lineTo(x, y + r); 
+          ctx.quadraticCurveTo(x, y, x + r, y); 
+          ctx.fill(); 
+        } 
+      } 
+    }); 
+    
+    var st = new $jit.ST({
+      //id of viz container element
+      orientation: 'top',
+      injectInto: 'infovis',
+      //set duration for the animation
+      duration: 100,
+	  offsetY: 350,
+	  offsetX: 0,
+      //set distance between node and its children
+      levelDistance: 50,
+      levelsToShow: 30,
+      constrained: false,
+      //offsetX: (window.innerWidth/2 - 100),
+      //enable panning
+      Navigation: {
+        enable:true,
+        panning:true
+      },
+      
+      //set node and edge styles
+      //set overridable=true for styling individual
+      //nodes or edges
+      Node: {
+        height: 60,
+        width: 100,
+        type: 'roundrect',
+        color: '#aaa',
+        overridable: true
+      },
+      Edge: {
+        type: 'bezier',
+        overridable: true
+      },
+      Tips: {
+        enable: true,
+        offsetX: 10,
+        offsetY: 10,
+        onShow: function(tip, node) {
+          tip.innerHTML = "Snapshot";
+          tip.style.overflow = 'hidden';
+        }
+      },
+      onBeforePlotNode: function(node){  
+        //add some color to the nodes in the path between the  
+        //root node and the selected node.  
+        if (node.selected) {  
+          node.data.$color = "#dddddd";  
+        } else {  
+          delete node.data.$color;  
+        }  
+      },
+      onBeforePlotLine: function(adj){
+        if (adj.nodeFrom.selected && adj.nodeTo.selected) {
+          adj.data.$color = "#33CC33";
+          adj.data.$lineWidth = 5;
+        } else {
+          delete adj.data.$color;
+          delete adj.data.$lineWidth;
+        }
+      }, 
+      //This method is called on DOM label creation.
+      //Use this method to add event handlers and styles to
+      //your node.
+      onCreateLabel: function(label, node){
+        label.id = node.id;
+        label.innerHTML = '<a href="#">' + node.name + '</a>';
+        //set label styles
+        var style = label.style;
+        style.width = 100 + 'px';
+        style.height = 17 + 'px';
+        style.cursor = 'pointer';
+        style.fontSize = '0.7em';
+        style.textAlign= 'center';
+        style.paddingTop = '3px';
+      }
+      
+    });
+     
+    //load json data
+    st.loadJSON(json);
+    st.compute();
+    st.onClick(st.root);
+
+	
+   </script> 
+   
+  </body> 
+</html> 
+ 
